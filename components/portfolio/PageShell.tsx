@@ -54,7 +54,7 @@ export function PageShell({ title, accent, children }: PageShellProps) {
           onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--fg-muted)' }}
         >
           <span style={{ fontSize: '14px' }}>←</span>
-          <span>Likhitha Battu</span>
+          <span>Home</span>
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
