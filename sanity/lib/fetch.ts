@@ -7,8 +7,10 @@ import {
   PROJECT_SLUGS_QUERY,
   HACKATHONS_QUERY,
   OBSESSIONS_QUERY,
+  SKILLS_QUERY,
+  ABOUT_QUERY,
 } from './queries'
-import type { ResearchEntry, Project, Hackathon, Obsession } from './types'
+import type { ResearchEntry, Project, Hackathon, Obsession, Skill, About } from './types'
 
 // Re-validate every 5 minutes. On-demand revalidation can be triggered via
 // the /api/revalidate route using Sanity webhooks (see that file for setup).
@@ -48,4 +50,16 @@ export const getObsessions = unstable_cache(
   () => client.fetch<Obsession[]>(OBSESSIONS_QUERY),
   ['obsessions'],
   { revalidate: REVALIDATE, tags: ['obsessions'] },
+)
+
+export const getSkills = unstable_cache(
+  () => client.fetch<Skill[]>(SKILLS_QUERY),
+  ['skills'],
+  { revalidate: REVALIDATE, tags: ['skills'] },
+)
+
+export const getAbout = unstable_cache(
+  () => client.fetch<About | null>(ABOUT_QUERY),
+  ['about'],
+  { revalidate: REVALIDATE, tags: ['about'] },
 )

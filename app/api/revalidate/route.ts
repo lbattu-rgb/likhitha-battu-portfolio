@@ -11,12 +11,16 @@ import { type NextRequest, NextResponse } from 'next/server'
 //   *[_type == "project"]     → tag: projects
 //   *[_type == "hackathon"]   → tag: hackathons
 //   *[_type == "obsession"]   → tag: obsessions
+//   *[_type == "skill"]       → tag: skills
+//   *[_type == "about"]       → tag: about
 
 const TYPE_TO_TAG: Record<string, string> = {
   research:  'research',
   project:   'projects',
   hackathon: 'hackathons',
   obsession: 'obsessions',
+  skill:     'skills',
+  about:     'about',
 }
 
 export async function POST(req: NextRequest) {

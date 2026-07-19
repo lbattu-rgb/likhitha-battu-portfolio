@@ -24,22 +24,23 @@ export function EmptyState({
       }} />
       <p style={{
         margin: 0,
-        fontSize: '12px',
+        fontSize: 'var(--text-meta)',
+        fontWeight: 500,
         fontFamily: 'var(--font-geist-mono), monospace',
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
-        color: 'rgba(248,250,252,0.25)',
+        color: 'var(--fg-tertiary)',
       }}>
         {message}
       </p>
       <p style={{
         margin: 0,
-        fontSize: '11px',
-        color: 'rgba(248,250,252,0.12)',
+        fontSize: '13px',
+        color: 'var(--fg-muted)',
         fontFamily: 'var(--font-geist-mono), monospace',
         letterSpacing: '0.06em',
       }}>
-        Add entries via <span style={{ color: `${accent}66` }}>/studio</span>
+        Add entries via <span style={{ color: `${accent}cc` }}>/studio</span>
       </p>
     </div>
   )

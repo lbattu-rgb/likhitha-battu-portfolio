@@ -1,13 +1,27 @@
 import type { Metadata } from 'next'
 import { notFound }           from 'next/navigation'
-import Image                  from 'next/image'
 import { PortableText }       from '@portabletext/react'
 import { PageShell }          from '@/components/portfolio/PageShell'
 import { TechList }           from '@/components/portfolio/TechTag'
+import { ProjectLinks }       from '@/components/portfolio/ProjectLinks'
+import { LightboxImage }      from '@/components/portfolio/LightboxImage'
+import { Reveal }             from '@/components/portfolio/Reveal'
+import { BackLink }           from '@/components/portfolio/BackLink'
+import MiniBrain              from '@/components/brain/MiniBrain'
 import { getProjectBySlug, getProjectSlugs } from '@/sanity/lib/fetch'
 import { urlFor }             from '@/sanity/lib/image'
 
 const ACCENT = '#c084fc'
+
+const SECTION_LABEL_STYLE = {
+  margin: '0 0 var(--space-sm)',
+  fontSize: '11px',
+  fontWeight: 600,
+  fontFamily: 'var(--font-geist-mono), monospace',
+  letterSpacing: '0.16em',
+  textTransform: 'uppercase' as const,
+  color: 'var(--fg-tertiary)',
+}
 
 // ─── Static params ────────────────────────────────────────────────────────────
 
@@ -43,105 +57,124 @@ export default async function ProjectDetailPage({
   const project  = await getProjectBySlug(slug)
   if (!project) notFound()
 
+  // No forced height/crop here — the source image's own proportions vary a
+  // lot (screenshots, figures, etc.), so we scale width only and let
+  // LightboxImage's fit="contain" show the whole thing without cutting
+  // anything off.
   const heroImage = project.images?.[0]
-    ? urlFor(project.images[0]).width(1200).height(630).fit('crop').url()
+    ? urlFor(project.images[0]).width(1400).fit('max').url()
     : null
+  const hasLinks = Boolean(project.githubUrl || project.demoUrl)
 
   return (
     <PageShell title={project.title} accent={ACCENT}>
-      <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '780px', margin: '0 auto' }}>
+        <div style={{ marginBottom: 'var(--space-lg)' }}>
+          <MiniBrain accent={ACCENT} />
+        </div>
 
-        {/* Hero image */}
+        <BackLink href="/projects" label="All Projects" accent={ACCENT} />
+
+        {/* ── 1. Hero: image, title, summary, stack, links ──────────────────── */}
         {heroImage && (
-          <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', marginBottom: '40px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(248,250,252,0.08)' }}>
-            <Image src={heroImage} alt={project.images![0].alt ?? project.title} fill style={{ objectFit: 'cover' }} />
-          </div>
+          <LightboxImage
+            src={heroImage}
+            alt={project.images![0].alt ?? project.title}
+            fit="contain"
+            sizes="(max-width: 780px) 100vw, 780px"
+            style={{ width: '100%', height: 'min(60vh, 520px)', marginBottom: 'var(--space-xl)' }}
+          />
         )}
 
-        {/* Title */}
-        <h1 style={{ margin: '0 0 12px', fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 600, letterSpacing: '-0.02em' }}>
+        <h1 style={{
+          margin: '0 0 var(--space-sm)',
+          fontFamily: 'var(--font-space-grotesk), system-ui, sans-serif',
+          fontSize: 'var(--text-section)',
+          fontWeight: 700,
+          letterSpacing: '-0.02em',
+          color: 'var(--fg)',
+        }}>
           {project.title}
         </h1>
 
-        {/* Summary */}
         {project.summary && (
-          <p style={{ margin: '0 0 32px', fontSize: '16px', lineHeight: 1.65, color: 'rgba(248,250,252,0.65)' }}>
+          <p style={{ margin: '0 0 var(--space-md)', fontSize: '18px', fontWeight: 400, lineHeight: 1.7, color: 'var(--fg-secondary)' }}>
             {project.summary}
           </p>
         )}
 
-        {/* Links */}
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
-          {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: '12px', fontWeight: 500, letterSpacing: '0.08em', color: `${ACCENT}cc`, textDecoration: 'none', border: `1px solid ${ACCENT}44`, padding: '6px 16px', borderRadius: '2px', transition: 'border-color 0.2s, color 0.2s' }}
-              onMouseEnter={(e) => { const el = e.currentTarget; el.style.color = ACCENT; el.style.borderColor = `${ACCENT}88` }}
-              onMouseLeave={(e) => { const el = e.currentTarget; el.style.color = `${ACCENT}cc`; el.style.borderColor = `${ACCENT}44` }}
-            >
-              → GitHub
-            </a>
-          )}
-          {project.demoUrl && (
-            <a href={project.demoUrl} target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: '12px', fontWeight: 500, letterSpacing: '0.08em', color: 'rgba(248,250,252,0.5)', textDecoration: 'none', border: '1px solid rgba(248,250,252,0.15)', padding: '6px 16px', borderRadius: '2px', transition: 'border-color 0.2s, color 0.2s' }}
-              onMouseEnter={(e) => { const el = e.currentTarget; el.style.color = '#f8fafc'; el.style.borderColor = 'rgba(248,250,252,0.35)' }}
-              onMouseLeave={(e) => { const el = e.currentTarget; el.style.color = 'rgba(248,250,252,0.5)'; el.style.borderColor = 'rgba(248,250,252,0.15)' }}
-            >
-              → Live Demo
-            </a>
-          )}
-        </div>
-
-        {/* Problem / Solution */}
-        {(project.problem || project.solution) && (
-          <div style={{ display: 'grid', gridTemplateColumns: project.problem && project.solution ? '1fr 1fr' : '1fr', gap: '24px', marginBottom: '40px' }}>
-            {project.problem && (
-              <div style={{ padding: '20px', border: '1px solid rgba(248,250,252,0.07)', borderRadius: '4px' }}>
-                <h3 style={{ margin: '0 0 10px', fontSize: '10px', fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(248,250,252,0.35)' }}>Problem</h3>
-                <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.65, color: 'rgba(248,250,252,0.6)' }}>{project.problem}</p>
-              </div>
-            )}
-            {project.solution && (
-              <div style={{ padding: '20px', border: `1px solid ${ACCENT}22`, borderRadius: '4px', background: `${ACCENT}06` }}>
-                <h3 style={{ margin: '0 0 10px', fontSize: '10px', fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.16em', textTransform: 'uppercase', color: `${ACCENT}88` }}>Solution</h3>
-                <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.65, color: 'rgba(248,250,252,0.6)' }}>{project.solution}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Technologies */}
         {project.technologies?.length ? (
-          <div style={{ marginBottom: '40px' }}>
-            <h3 style={{ margin: '0 0 14px', fontSize: '10px', fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(248,250,252,0.35)' }}>Stack</h3>
+          <div style={{ marginBottom: 'var(--space-md)' }}>
             <TechList tags={project.technologies} accent={ACCENT} />
           </div>
         ) : null}
 
-        {/* Rich text body */}
+        <div style={{ marginBottom: 'var(--space-xl)' }}>
+          <ProjectLinks githubUrl={project.githubUrl} demoUrl={project.demoUrl} accent={ACCENT} />
+        </div>
+
+        {/* ── 2–3. Problem → Solution ─────────────────────────────────────────── */}
+        {(project.problem || project.solution) && (
+          <Reveal style={{ display: 'grid', gridTemplateColumns: project.problem && project.solution ? '1fr 1fr' : '1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+            {project.problem && (
+              <div style={{ padding: 'var(--space-md)', border: '1px solid var(--card-border)', borderRadius: 'var(--ui-radius-md)', background: 'var(--surface)' }}>
+                <h2 style={SECTION_LABEL_STYLE}>The Problem</h2>
+                <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.7, color: 'var(--fg-secondary)' }}>{project.problem}</p>
+              </div>
+            )}
+            {project.solution && (
+              <div style={{ padding: 'var(--space-md)', border: `1px solid ${ACCENT}33`, borderRadius: 'var(--ui-radius-md)', background: `${ACCENT}0a` }}>
+                <h2 style={{ ...SECTION_LABEL_STYLE, color: `${ACCENT}c0` }}>The Solution</h2>
+                <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.7, color: 'var(--fg-secondary)' }}>{project.solution}</p>
+              </div>
+            )}
+          </Reveal>
+        )}
+
+        {/* ── 4. How it works — the technical deep dive ───────────────────────── */}
         {project.body?.length ? (
-          <div style={{ marginBottom: '40px' }}>
-            <h3 style={{ margin: '0 0 20px', fontSize: '10px', fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(248,250,252,0.35)' }}>Details</h3>
-            <div style={{ fontSize: '15px', lineHeight: 1.75, color: 'rgba(248,250,252,0.65)' }}>
+          <Reveal style={{ marginBottom: 'var(--space-xl)' }}>
+            <h2 style={SECTION_LABEL_STYLE}>How It Works</h2>
+            <div style={{ fontSize: '17px', lineHeight: 1.75, color: 'var(--fg-secondary)' }}>
               <PortableText value={project.body} />
             </div>
-          </div>
+          </Reveal>
         ) : null}
 
-        {/* Image gallery (remaining images after hero) */}
+        {/* ── 5. Gallery — evidence, not an afterthought ───────────────────────── */}
         {project.images && project.images.length > 1 && (
-          <div style={{ marginBottom: '40px' }}>
-            <h3 style={{ margin: '0 0 14px', fontSize: '10px', fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(248,250,252,0.35)' }}>Gallery</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+          <div style={{ marginBottom: 'var(--space-xl)' }}>
+            <h2 style={SECTION_LABEL_STYLE}>Gallery</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-md)' }}>
               {project.images.slice(1).map((img, i) => {
                 const src = urlFor(img).width(600).height(400).fit('crop').url()
                 return (
-                  <div key={i} style={{ position: 'relative', aspectRatio: '3/2', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(248,250,252,0.08)' }}>
-                    <Image src={src} alt={img.alt ?? `${project.title} image ${i + 2}`} fill style={{ objectFit: 'cover' }} />
-                  </div>
+                  <figure key={img._key ?? i} style={{ margin: 0 }}>
+                    <LightboxImage
+                      src={src}
+                      alt={img.alt ?? `${project.title} — image ${i + 2}`}
+                      style={{ aspectRatio: '3/2' }}
+                      sizes="(max-width: 600px) 100vw, 280px"
+                    />
+                    {img.caption && (
+                      <figcaption style={{ margin: '8px 0 0', fontSize: '12px', lineHeight: 1.5, color: 'var(--fg-muted)', fontFamily: 'var(--font-geist-mono), monospace' }}>
+                        {img.caption}
+                      </figcaption>
+                    )}
+                  </figure>
                 )
               })}
             </div>
+          </div>
+        )}
+
+        {/* ── 6. Closing call to action ─────────────────────────────────────────── */}
+        {hasLinks && (
+          <div style={{ paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--card-border)' }}>
+            <p style={{ margin: '0 0 var(--space-sm)', fontSize: '15px', color: 'var(--fg-tertiary)' }}>
+              Want to dig deeper?
+            </p>
+            <ProjectLinks githubUrl={project.githubUrl} demoUrl={project.demoUrl} accent={ACCENT} />
           </div>
         )}
       </div>

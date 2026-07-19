@@ -109,3 +109,29 @@ export const OBSESSIONS_QUERY = `
     displayOrder,
   }
 `
+
+// ─── Skills ───────────────────────────────────────────────────────────────────
+
+export const SKILLS_QUERY = `
+  *[_type == "skill"] | order(category asc, displayOrder asc) {
+    _id,
+    _createdAt,
+    name,
+    category,
+    proficiency,
+    displayOrder,
+  }
+`
+
+// ─── About ────────────────────────────────────────────────────────────────────
+
+export const ABOUT_QUERY = `
+  *[_type == "about"][0] {
+    _id,
+    headline,
+    bio,
+    values,
+    photo { ${IMAGE_FIELDS} },
+    links[] { _key, ${LINK_FIELDS} },
+  }
+`

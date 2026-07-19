@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:3000/research)",
+      "Bash(curl -s http://localhost:3000/projects)",
+      "Bash(curl -s http://localhost:3000/hackathons)",
+      "Bash(curl -s http://localhost:3000/obsessions)",
+      "Bash(curl -s http://localhost:3000/studio)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(node -e ' *)",
+      "Bash(curl -s http://localhost:3000/studio -o /tmp/studio_body.html)",
+      "Bash(grep -o \"Application error\\\\|Internal Server Error\\\\|Something went wrong\\\\|digest.*[0-9]\\\\{5,\\\\}\" /tmp/studio_body.html)",
+      "Bash(curl -s -o /dev/null -w \"dev server status: %{http_code}\\\\n\" http://localhost:3000/studio)",
+      "Bash(curl -s -o /dev/null -w \"mycellium detail: %{http_code}\\\\n\" http://localhost:3000/projects/mycellium)",
+      "Bash(curl -s -o /dev/null -w \"skin-lesion detail: %{http_code}\\\\n\" http://localhost:3000/projects/skin-lesion-segmentation-with-uncertainty-estimation)",
+      "Bash(curl -s -o /dev/null -w \"algoscope detail: %{http_code}\\\\n\" http://localhost:3000/projects/algoscope)",
+      "Bash(curl -s -o /dev/null -w \"server check: %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/skills)",
+      "Bash(curl -s http://localhost:3000/about)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/skills)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/about)",
+      "Bash(grep -oE '<h2[^>]*>[^<]*</h2>|<span[^>]*>[A-Za-z0-9 .+#/-]{2,30}</span>')",
+      "Bash(sed -i '' -E 's/rgba\\\\\\(248,[[:space:]]*250,[[:space:]]*252,/rgba\\(var\\(--fg-rgb\\),/g' \"app/\\(portfolio\\)/research/page.tsx\")",
+      "Bash(echo \"exit code: $?\")",
+      "Bash(npx eslint *)",
+      "Bash(grep -rn 'color: `\\\\${ACCENT}' app/ --include=\"*.tsx\")",
+      "Bash(sed -i '' \"s/<p style={{ margin: '6px 0 0', fontSize: '14px', color: \\\\`\\\\${ACCENT}d0\\\\`, fontWeight: 500 }}>/<p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var\\(--fg-secondary\\)', fontWeight: 500 }}>/\" \"app/\\(portfolio\\)/research/page.tsx\")",
+      "Bash(sed -i '' \"s/<p style={{ margin: '6px 0 0', fontSize: '14px', fontWeight: 500, color: \\\\`\\\\${ACCENT}d0\\\\` }}>/<p style={{ margin: '6px 0 0', fontSize: '14px', fontWeight: 500, color: 'var\\(--fg-secondary\\)' }}>/\" \"app/\\(portfolio\\)/hackathons/page.tsx\")",
+      "Bash(sed -i '' \"s/borderRadius: '6px',/borderRadius: 'var\\(--radius-sm\\)',/\" \"app/\\(portfolio\\)/research/page.tsx\" \"app/\\(portfolio\\)/obsessions/page.tsx\" \"app/\\(portfolio\\)/hackathons/page.tsx\" \"components/portfolio/ProjectCard.tsx\" \"components/portfolio/TechTag.tsx\")",
+      "Bash(sed -i '' \"s/borderRadius: '14px'/borderRadius: 'var\\(--radius-md\\)'/g\" \"app/\\(portfolio\\)/projects/[slug]/page.tsx\" \"components/portfolio/LightboxImage.tsx\")",
+      "Bash(sed -i '' \"s/borderRadius: '10px',/borderRadius: 'var\\(--radius-sm\\)',/\" \"components/theme/ThemeToggle.tsx\" \"components/portfolio/Lightbox.tsx\")",
+      "Bash(sed -i '' \"s/borderRadius: '10px'/borderRadius: 'var\\(--radius-sm\\)'/g\" \"components/portfolio/ProjectLinks.tsx\")",
+      "Bash(sed -i '' \"s/borderRadius: '4px' }}>/borderRadius: 'var\\(--radius-md\\)' }}>/\" \"components/portfolio/PageSkeleton.tsx\")",
+      "Bash(curl -s http://localhost:3000/projects/mycellium)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/projects/mycellium)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)"
+    ]
+  }
+}

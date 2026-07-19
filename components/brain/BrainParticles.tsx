@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useThree } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
+import { useRouter } from 'next/navigation'
 import * as THREE from 'three'
 import {
   generateChaosPositions,
@@ -13,6 +14,7 @@ import {
   LOBE_COLORS,
 } from '@/lib/brainGeometry'
 import { SHADER_UNIFORMS } from '@/lib/brainState'
+import { LOBE_ROUTES } from '@/lib/brainRegions'
 
 // ─── Module-level data (computed once, geometry mutated on load) ──────────────
 
@@ -265,6 +267,7 @@ async function loadBrainBinary(): Promise<void> {
 export function BrainParticles() {
   const mountedRef = useRef(false)
   const { raycaster } = useThree()
+  const router = useRouter()
 
   // Enable point-cloud hit detection with a comfortable radius (local-space units).
   // At group scale 1.42 this is ~0.057 world units — large enough to reliably hit
@@ -290,6 +293,12 @@ export function BrainParticles() {
     document.body.style.cursor = 'default'
   }
 
+  function handleClick(e: ThreeEvent<PointerEvent>) {
+    if (!_loaded || e.index === undefined || e.index >= PARTICLE_COUNT) return
+    const route = LOBE_ROUTES[_lobeIds[e.index]]
+    if (route) router.push(route)
+  }
+
   return (
     <>
       <points
@@ -297,6 +306,7 @@ export function BrainParticles() {
         material={_mat}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
+        onClick={handleClick}
       />
       <lineSegments geometry={_lineGeo} material={_lineMat} />
     </>

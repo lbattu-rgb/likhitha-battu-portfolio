@@ -4,7 +4,7 @@
   --font-sans: var(--font-space-grotesk);
   --font-mono: var(--font-geist-mono);
 
-  /* Brain region palette */
+  /* Brain region palette — same hex in both themes, these are brand accents */
   --color-research:   #00ff88;
   --color-projects:   #c084fc;
   --color-skills:     #22d3ee;
@@ -17,10 +17,98 @@
   --color-bg:         #000000;
 }
 
+/*
+ * Theme tokens. Dark is the default (`:root`, no attribute needed). The
+ * homepage brain visualization is intentionally NOT wired to any of this —
+ * it hardcodes its own colors and stays pure black always (see app/page.tsx,
+ * components/brain/*). Everything below only affects content pages.
+ *
+ * `[data-theme="light"]` on <html> flips to the light palette; set by the
+ * anti-flash script in app/layout.tsx and toggled at runtime by
+ * components/theme/ThemeToggle.tsx.
+ *
+ * --fg-rgb / --bg-rgb are "R, G, B" triples (no rgb()/rgba() wrapper) so call
+ * sites can do rgba(var(--fg-rgb), 0.65) — this also doubles as the card
+ * "surface" tint (a translucent overlay of the foreground color reads as a
+ * lifted glass panel in both themes without needing a separate variable).
+ */
+:root {
+  --bg:               #0a0a0c;
+  --bg-rgb:            10, 10, 12;
+  --fg:               #f8fafc;
+  --fg-rgb:            248, 250, 252;
+
+  /* Contrast tiers — deliberately brighter than a typical faded-grey scale */
+  --fg-secondary:     rgba(var(--fg-rgb), 0.85);
+  --fg-tertiary:      rgba(var(--fg-rgb), 0.62);
+  --fg-muted:         rgba(var(--fg-rgb), 0.44);
+
+  /* Card / surface system — flat, no blur. A border and a faint fill are
+     enough to read as a surface; blur was reading as generic glassmorphism. */
+  --surface:          rgba(var(--fg-rgb), 0.035);
+  --surface-hover:    rgba(var(--fg-rgb), 0.055);
+  --card-border:      rgba(var(--fg-rgb), 0.13);
+  --card-border-hover: rgba(var(--fg-rgb), 0.24);
+  --card-shadow:      0 4px 16px rgba(0, 0, 0, 0.22);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg:               #f6f6f7;
+  --bg-rgb:            246, 246, 247;
+  --fg:               #0c0e14;
+  --fg-rgb:            12, 14, 20;
+
+  --fg-secondary:     rgba(var(--fg-rgb), 0.82);
+  --fg-tertiary:      rgba(var(--fg-rgb), 0.58);
+  --fg-muted:         rgba(var(--fg-rgb), 0.42);
+
+  --surface:          rgba(var(--fg-rgb), 0.028);
+  --surface-hover:    rgba(var(--fg-rgb), 0.05);
+  --card-border:      rgba(var(--fg-rgb), 0.11);
+  --card-border-hover: rgba(var(--fg-rgb), 0.22);
+  --card-shadow:      0 4px 16px rgba(0, 0, 0, 0.06);
+
+  color-scheme: light;
+}
+
+/* Typography scale — restrained on purpose. Hierarchy comes from the gap
+   between these sizes plus weight, not from any one of them being huge. */
+:root {
+  --text-section: clamp(26px, 3.4vw, 38px);
+  --text-card:    clamp(18px, 1.8vw, 22px);
+  --text-body:    17px;
+  --text-meta:    14px;
+
+  /* Spacing scale — used for consistent section/card/paragraph gaps */
+  --space-xs:  8px;
+  --space-sm:  16px;
+  --space-md:  24px;
+  --space-lg:  40px;
+  --space-xl:  64px;
+  --space-2xl: 96px;
+
+  /* Radius scale — standardizes what had drifted across components
+     (6px/10px/14px/18px scattered arbitrarily) */
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 14px;
+}
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 html,
@@ -29,13 +117,23 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-  background: #000000;
-  color: #f8fafc;
-  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.25s ease, color 0.25s ease;
   /* overflow intentionally omitted: the homepage main element sets overflow:hidden
      on its own, while content pages need to scroll. */
+}
+
+/* Visible keyboard focus state — consistent across every interactive element */
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* Respect reduced motion preference */
@@ -46,4 +144,16 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Route-level loading skeletons (see components/portfolio/PageSkeleton.tsx) */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.12; }
+}
+
+.skeleton-block {
+  background: rgba(var(--fg-rgb), 0.35);
+  border-radius: 3px;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
 }

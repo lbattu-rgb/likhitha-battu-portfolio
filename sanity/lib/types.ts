@@ -93,3 +93,28 @@ export interface Obsession {
   status?: ObsessionStatus
   displayOrder: number
 }
+
+// ─── Skill ────────────────────────────────────────────────────────────────────
+
+export type SkillCategory = 'languages' | 'frameworks' | 'tools' | 'ml-ai' | 'scientific'
+export type SkillProficiency = 'familiar' | 'proficient' | 'expert'
+
+export interface Skill {
+  _id: string
+  _createdAt: string
+  name: string
+  category: SkillCategory
+  proficiency?: SkillProficiency
+  displayOrder: number
+}
+
+// ─── About ────────────────────────────────────────────────────────────────────
+
+export interface About {
+  _id: string
+  headline: string
+  bio?: PortableTextBlock[]
+  values?: string[]
+  photo?: SanityImage
+  links?: SanityLink[]
+}

@@ -36,15 +36,20 @@ type Layout = {
 //   skills     [-0.45, 0.18, 0.68]: middle band, x=-0.45<0.06  → cyan(2)   ✓
 //   about      [ 0.58,-0.44, 0.52]: y=-0.44<-0.10, x=0.58≥0.10 → white(4) ✓
 //
-// Label layout — 3 left / 3 right mirrors the X-split of the regions:
-//   LEFT  (screen-left regions): research↑, obsessions→, skills↓
-//   RIGHT (screen-right regions): projects↑, hackathons→, about↓
+// Label layout — 3 left / 3 right mirrors the X-split of the regions. Each
+// side's labels stay stacked in the SAME top-to-bottom order as their
+// anchors (research above skills above obsessions on the left; projects
+// above hackathons above about on the right) so the connector curves never
+// cross each other — a label whose curve dips into a neighboring region's
+// vertical band reads as ambiguous about which region it belongs to.
+//   LEFT  (screen-left regions):  research↑, skills→(middle), obsessions↓
+//   RIGHT (screen-right regions): projects↑, hackathons→(middle), about↓
 const LAYOUT: Record<string, Layout> = {
   research:   { anchor: [-0.65,  0.52,  0.52], bend: [-1.38,  0.58,  0.22], label: [-1.90,  0.62, 0], phase: 0.00, lobeId: 0 },
-  obsessions: { anchor: [-0.20, -0.42,  0.52], bend: [-0.80, -0.18,  0.28], label: [-1.78,  0.10, 0], phase: 1.05, lobeId: 5 },
+  obsessions: { anchor: [-0.20, -0.42,  0.52], bend: [-0.72, -0.48,  0.32], label: [-1.28, -0.52, 0], phase: 1.05, lobeId: 5 },
   projects:   { anchor: [ 0.05,  0.72,  0.58], bend: [ 1.00,  0.96,  0.22], label: [ 1.82,  1.08, 0], phase: 2.10, lobeId: 1 },
   hackathons: { anchor: [ 0.76,  0.18,  0.42], bend: [ 1.45,  0.20,  0.14], label: [ 1.88,  0.26, 0], phase: 3.15, lobeId: 3 },
-  skills:     { anchor: [-0.45,  0.18,  0.68], bend: [-1.15, -0.20,  0.35], label: [-1.85, -0.58, 0], phase: 4.20, lobeId: 2 },
+  skills:     { anchor: [-0.45,  0.18,  0.68], bend: [-1.15,  0.05,  0.35], label: [-1.85, -0.05, 0], phase: 4.20, lobeId: 2 },
   about:      { anchor: [ 0.58, -0.44,  0.52], bend: [ 1.22, -0.80,  0.24], label: [ 1.72, -1.26, 0], phase: 5.25, lobeId: 4 },
 }
 
@@ -123,7 +128,7 @@ function RegionCallout({ region, layout, onEnter, onLeave, onClick }: CalloutPro
     const readyAt   = SHADER_UNIFORMS.uReadyTime.value
     const assemblyT = readyAt >= 0 ? t - readyAt : 0
 
-    const appear  = smoothstep(5.8, 8.0, assemblyT)
+    const appear  = smoothstep(5.4, 6.3, assemblyT)
     const pulse   = 0.5 + 0.5 * Math.sin(t * 1.4 + phase)
 
     // Read hover state directly from the uniform — no React state needed.

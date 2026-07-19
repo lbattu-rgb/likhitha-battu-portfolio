@@ -34,6 +34,20 @@ export default defineConfig({
               .title('Current Obsessions')
               .schemaType('obsession')
               .child(S.documentTypeList('obsession').title('Current Obsessions')),
+            S.listItem()
+              .title('Skills')
+              .schemaType('skill')
+              .child(S.documentTypeList('skill').title('Skills')),
+            S.divider(),
+            // Singleton — always resolves to the one 'about' document.
+            S.listItem()
+              .title('About')
+              .id('about')
+              .child(
+                S.document()
+                  .schemaType('about')
+                  .documentId('about'),
+              ),
           ]),
     }),
   ],

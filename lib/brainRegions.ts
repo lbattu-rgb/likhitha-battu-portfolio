@@ -13,3 +13,8 @@ export const BRAIN_REGIONS: BrainRegion[] = [
   { id: 'about', label: 'About', color: '#f8fafc', route: '/about' },
   { id: 'obsessions', label: 'Current Obsessions', color: '#fb2379', route: '/obsessions' },
 ]
+
+// lobeId (0–5), as classified by assignLobeId() in lib/brainGeometry.ts, maps 1:1
+// to BRAIN_REGIONS in array order (see BrainRegions.tsx LAYOUT for the verified
+// per-region lobeId assignments). Used to route brain-surface clicks to pages.
+export const LOBE_ROUTES: string[] = BRAIN_REGIONS.map((r) => r.route)

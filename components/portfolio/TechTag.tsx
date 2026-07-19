@@ -7,15 +7,15 @@ export function TechTag({ name, accent = '#8bb8ff' }: TechTagProps) {
   return (
     <span style={{
       display: 'inline-block',
-      padding: '3px 9px',
-      border: `1px solid ${accent}33`,
-      borderRadius: '2px',
-      fontSize: '10px',
+      padding: '5px 11px',
+      border: `1px solid ${accent}40`,
+      borderRadius: 'var(--ui-radius-sm)',
+      fontSize: 'var(--text-meta)',
       fontFamily: 'var(--font-geist-mono), monospace',
-      fontWeight: 400,
-      letterSpacing: '0.08em',
-      color: `${accent}cc`,
-      background: `${accent}0a`,
+      fontWeight: 500,
+      letterSpacing: '0.04em',
+      color: `${accent}e0`,
+      background: `${accent}12`,
       whiteSpace: 'nowrap',
     }}>
       {name}

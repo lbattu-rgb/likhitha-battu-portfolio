@@ -6,7 +6,7 @@ import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { BrainParticles } from './BrainParticles'
 import { BrainRegions } from './BrainRegions'
-import { SHADER_UNIFORMS } from '@/lib/brainState'
+import { SHADER_UNIFORMS, HINT_STATE } from '@/lib/brainState'
 
 const ASSEMBLY_DURATION = 5.3
 
@@ -18,14 +18,17 @@ const _frontPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)
 export function BrainContent() {
   const groupRef     = useRef<THREE.Group>(null)
   const hintRef      = useRef<HTMLDivElement>(null)
-  const hintShownRef = useRef(false)
   const lastMoveRef  = useRef(-999)
   const lastPtrRef   = useRef({ x: 0, y: 0 })
 
   const { camera, pointer } = useThree()
 
-  useFrame(({ clock }) => {
-    const now = clock.getElapsedTime()
+  useFrame((_, delta) => {
+    // Accumulate onto the persisted uTime value (module-level, survives
+    // remounts) rather than reading the Canvas-local clock's elapsed time
+    // (which resets to 0 whenever BrainContent remounts) — otherwise
+    // navigating back to "/" would replay the whole assembly animation.
+    const now = SHADER_UNIFORMS.uTime.value + delta
     SHADER_UNIFORMS.uTime.value = now
 
     // ── Mouse tracking: project pointer ray to brain group's local space ────
@@ -60,9 +63,10 @@ export function BrainContent() {
     }
 
     // ── One-shot "hover to explore" hint ────────────────────────────────────
-    // Appears 1.5s after assembly completes, fades out 4s later, never returns.
-    if (hintRef.current && !hintShownRef.current && sinceReady > ASSEMBLY_DURATION + 1.5) {
-      hintShownRef.current = true
+    // Appears 1.5s after assembly completes, fades out 4s later, never returns
+    // (HINT_STATE is module-level, so it also won't replay on remount).
+    if (hintRef.current && !HINT_STATE.shown && sinceReady > ASSEMBLY_DURATION + 1.5) {
+      HINT_STATE.shown = true
       hintRef.current.style.opacity = '1'
       setTimeout(() => {
         if (hintRef.current) hintRef.current.style.opacity = '0'
