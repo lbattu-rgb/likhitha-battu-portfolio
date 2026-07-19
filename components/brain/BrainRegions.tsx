@@ -247,6 +247,7 @@ export function BrainRegions() {
             onEnter={() => {
               SHADER_UNIFORMS.uHoveredLobe.value = layout.lobeId
               document.body.style.cursor = 'pointer'
+              router.prefetch(region.route)
             }}
             onLeave={() => {
               SHADER_UNIFORMS.uHoveredLobe.value = -1

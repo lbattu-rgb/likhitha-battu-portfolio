@@ -266,6 +266,7 @@ async function loadBrainBinary(): Promise<void> {
 
 export function BrainParticles() {
   const mountedRef = useRef(false)
+  const lastPrefetchedLobeRef = useRef(-1)
   const { raycaster } = useThree()
   const router = useRouter()
 
@@ -284,8 +285,20 @@ export function BrainParticles() {
 
   function handlePointerMove(e: ThreeEvent<PointerEvent>) {
     if (!_loaded || e.index === undefined || e.index >= PARTICLE_COUNT) return
-    SHADER_UNIFORMS.uHoveredLobe.value = _lobeIds[e.index]
+    const lobeId = _lobeIds[e.index]
+    SHADER_UNIFORMS.uHoveredLobe.value = lobeId
     document.body.style.cursor = 'pointer'
+
+    // Prefetch the target route's RSC payload as soon as the user hovers a
+    // new lobe, so by the time they actually click, router.push resolves
+    // from cache instead of round-tripping to the server (which is what
+    // made navigation feel laggy — plain router.push() with no prior
+    // prefetch always waits on a fresh fetch).
+    if (lastPrefetchedLobeRef.current !== lobeId) {
+      lastPrefetchedLobeRef.current = lobeId
+      const route = LOBE_ROUTES[lobeId]
+      if (route) router.prefetch(route)
+    }
   }
 
   function handlePointerLeave() {
