@@ -44,7 +44,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Likhitha Battu',
   description:
-    'Computer Science & Engineering — AI, Computational Drug Discovery, Research Computing.',
+    'Computer Science with a Specialization in Intelligent Systems — AI, Computational Drug Discovery, Research Computing.',
 }
 
 export default function RootLayout({

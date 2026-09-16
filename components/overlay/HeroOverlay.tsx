@@ -92,7 +92,7 @@ export function HeroOverlay() {
           textShadow: '0 1px 12px rgba(0,0,0,0.8)',
         }}
       >
-        Computer Science &amp; Engineering
+        Computer Science with a Specialization in Intelligent Systems
       </motion.p>
 
       {/* Tags */}
